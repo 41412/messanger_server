@@ -2,7 +2,8 @@
 #define USERINFOMGR_H
 
 #include <QObject>
-
+#include <QVector>
+#include <QDebug>
 
 class UserInfoMgr : public QObject
 {
@@ -14,17 +15,21 @@ public:
         QString passWord;
     }userinfo;
 
+
     explicit UserInfoMgr(QObject *parent = 0);
 
-    bool isExistName(const QString& nanme);
+    bool isExistName(const QString& nickName);
+    void setUserInfo(QString nickName,QString passWord);
+    void attendUser();
 
 signals:
 
 public slots:
 
 private:
-    //QVector<userinfo> _table;
+   QVector<userinfo> userTable;
 
 };
+
 
 #endif // USERINFOMGR_H
