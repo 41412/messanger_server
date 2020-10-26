@@ -3,6 +3,8 @@
 #include "ui_widget.h"
 #include "chatdata.h"
 
+
+
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
