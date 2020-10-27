@@ -2,7 +2,7 @@
 #include "chatserver.h"
 #include "ui_widget.h"
 #include "chatdata.h"
-
+#include "userinfomgr.h"
 
 
 Widget::Widget(QWidget *parent) :
@@ -33,4 +33,5 @@ Widget::~Widget()
 {
     delete ui;
 }
+
 

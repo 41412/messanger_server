@@ -13,7 +13,8 @@ public:
 
     qint16 getMsgLength(QByteArray str);
     void getMsgBody(QByteArray& Body, QByteArray str, qint16 strSize);
-    void SetResMsg(qint8 protocol,QByteArray& resMsg,const QString& msg);
+    void SetResMsg(qint8 protocol,QByteArray& resMsg,const QString& msg);//
+    void SetResMsg(qint8 protocol,QByteArray& resMsg, QString& msg);//overroding
     qint8 getProtocol(QByteArray msg);
     void EnrollmentUser(QString nickName,QString passWord);
     void getPassWord(QByteArray& passWord,QByteArray msg);
@@ -35,6 +36,7 @@ protected:
 private:
     QSet<QTcpSocket*> clients;//set을 구성하여 tcp 소켓을 키를 가짐
     QMap<QTcpSocket*,QString> users; // tcp 소켓을 키로 구성하여 String을 값으로 나타냄
+    QMultiMap<QString, QString> friendList;//접속한 클라이언트의 친구 목록
 
 };
 

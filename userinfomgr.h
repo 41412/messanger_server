@@ -16,6 +16,7 @@ public:
     }userinfo;
 
 
+
     explicit UserInfoMgr(QObject *parent = 0);
 
     bool isExistName(const QString& nickName);

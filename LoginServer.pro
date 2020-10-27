@@ -9,15 +9,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         widget.cpp \
     chatserver.cpp \
-    chatlogin.cpp \
-    chatroom.cpp \
-    userinfomgr.cpp
+    userinfomgr.cpp \
+    chatroom.cpp
 
 HEADERS  += widget.h \
     chatserver.h \
-    chatlogin.h \
-    chatroom.h \
     chatdata.h \
-    userinfomgr.h
+    userinfomgr.h \
+    chatroom.h
 
 FORMS    += widget.ui

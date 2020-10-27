@@ -2,6 +2,7 @@
 #include <QRegExp>
 #include "chatserver.h"
 #include "chatdata.h"
+#include "userinfomgr.h"
 #include <QDebug>
 
 ChatServer::ChatServer(QObject *parent)
@@ -104,7 +105,35 @@ void ChatServer::SetResMsg(qint8 protocol,QByteArray& resMsg, const QString& msg
     resMsg += msg.toUtf8();
 
 }
+void ChatServer::SetResMsg(qint8 protocol,QByteArray& resMsg, QString& msg)
+{
+    qint8 byte = 0;
+    qint8 temp = msg.length()+2;
 
+
+        //메시지 길이 정의
+    for(byte = 3;byte >= 0;byte--)
+    {
+        if(temp != 0)
+        {
+            int remain = temp%10;
+
+            resMsg[byte] = remain + '0';
+
+            temp = temp/10;
+        }
+        else
+        {
+            resMsg[byte] = '\0';
+        }
+    }
+
+    resMsg += ' ';
+    resMsg += (protocol+'0');
+    resMsg += ' ';
+    resMsg += msg.toUtf8();
+
+}
 
 qint8 ChatServer::getProtocol(QByteArray msg)
 {
@@ -146,16 +175,15 @@ void ChatServer::readyRead()
     // QString str = QString::fromLocal8bit(msgBody.data(),msgBody.length());
 
                 //프로토콜 닉네임 비밀번호 정보를 각각 얻어옴
-        qint8 protocol = getProtocol(msgBody);
-        QString NickName = QString::fromUtf8(msgBody).trimmed();
-        QByteArray PassWord;
-        getPassWord(PassWord,msgBody);
+        QStringList protocol_nickname_password = QString(msgBody).split(" ");
+        qint8 protocol = protocol_nickname_password[0].toInt();
+        QString NickName = protocol_nickname_password[1];
+        QString PassWord = protocol_nickname_password[2];
 
 
-
+        qDebug() <<'\n'<< "protocol : " << protocol << "NickName : " << NickName << "PassWord :"<< PassWord;
                 //닉네임, 비밀번호 출력
-        QString str = QString("Read line: %1").arg(NickName);
-
+        QString str = QString("Read line: %1 %2").arg(NickName).arg(PassWord);
 
 
         emit message_signal(str);
@@ -184,16 +212,14 @@ void ChatServer::readyRead()
             }
 
 
-          //  EnrollmentUser();
-
-            //connect(client, SIGNAL(readyRead()), this,SLOT(readyRead()));
             return;
        }
 
-        //로그인
+            //로그인
        else if(protocol == 0)
        {
            qint32 ret = 0;
+           UserInfoMgr::userinfo totalUser;//서버 내 유저현황
 
            SetResMsg(0,resMsg,"Login OK");
 
@@ -231,7 +257,46 @@ void ChatServer::readyRead()
                 foreach(QTcpSocket *otherClient, clients)
                     otherClient->write(QString(user+":"+message+"\n").toUtf8());
             }
-     }
+     }//end : else if (로그인)
+       else if(protocol == 5) //추후 변경
+       {
+                                   //데이터 요청 메시지 수신
+                recvMsg = client->readAll();
+
+                if(protocol == 5)
+                {
+
+                                      //메시지 START 전달
+                    SetResMsg(protocol,resMsg,"MSG START");
+                    client->write(resMsg);
+
+
+                    QString copyFriend;
+
+                    friendList.insert(NickName,"Lee");
+                    friendList.insert(NickName,"Park");
+                    friendList.insert(NickName,"Choi");
+
+                                    //메시지 형태로 "이름1 이름2 이름3" 공백을 기준으로 하여 클라이언트에게 전송
+                    QList<QString> friendIdx = friendList.values(NickName);
+
+                    foreach(QString friendName,friendIdx )
+                    {
+                      copyFriend += friendName;
+                      copyFriend +=' ';
+                    }
+
+                      SetResMsg(6,resMsg,copyFriend);
+
+                      client->write(resMsg);
+
+                                 //메시지 END 전달
+                }
+                else //데이터
+                {
+                                    //데이터 요청 메시지 프로토콜 이외의 프로토콜 예외처리
+                }
+       }// end if protocol == 5
 }
 
 void ChatServer::disconnected()
@@ -259,11 +324,12 @@ void ChatServer::disconnected()
 
 void ChatServer::sendUserList()
 {
+
     QStringList userList;
     foreach(QString user, users.values())
         userList << user;
 
-    foreach(QTcpSocket *client, clients)
+     foreach(QTcpSocket *client, clients)
         client->write(QString("/유저:" + userList.join(",") + "\n")
                        .toUtf8());
 }

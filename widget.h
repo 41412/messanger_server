@@ -23,7 +23,6 @@ private:
 private slots:
     void slot_clients(int users);
     void slot_message(QString msg);
-
 };
 
 #endif // WIDGET_H

@@ -12,6 +12,13 @@ public:
 signals:
 
 public slots:
+    
+private:
+    qint32 roomId;
+    QString title;//방 관계자 대홤
+    bool roomState;//관계자 방 표시 여부
+    
+    
 
 };
 
