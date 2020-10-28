@@ -13,11 +13,13 @@ public:
 
     qint16 getMsgLength(QByteArray str);
     void getMsgBody(QByteArray& Body, QByteArray str, qint16 strSize);
-    void SetResMsg(qint8 protocol,QByteArray& resMsg,const QString& msg);//
-    void SetResMsg(qint8 protocol,QByteArray& resMsg, QString& msg);//overroding
-    qint8 getProtocol(QByteArray msg);
+    void SetResMsg(const QString& protocol,QByteArray& resMsg,const QString& msg);//
+    void SetResMsg(const QString& protocol,QByteArray& resMsg, QString& msg);//overroding
+
+    void SetResFriendMsg(qint32 numOfFriendCount,const QString& protocol,QByteArray& resMsg, QString& msg);
+
     void EnrollmentUser(QString nickName,QString passWord);
-    void getPassWord(QByteArray& passWord,QByteArray msg);
+
 
 private slots:
     void readyRead(); //메시지 수신
