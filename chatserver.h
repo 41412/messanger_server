@@ -11,6 +11,7 @@ class ChatServer : public QTcpServer
 public:
     ChatServer(QObject *parent=0);
 
+    QByteArray intToArray(qint32 source);
     void getMsgBody(QByteArray& Body, QByteArray str, qint16 strSize);
     void SetResMsg(const QString& protocol,QByteArray& resMsg,const QString& msg);//
     void SetResMsg(const QString& protocol,QByteArray& resMsg, QString& msg);//overroding

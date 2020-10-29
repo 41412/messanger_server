@@ -34,6 +34,17 @@ void ChatServer::incomingConnection(int socketfd)
             SLOT(disconnected()));
 }
 
+QByteArray ChatServer::intToArray(qint32 source)
+{
+    // Avoid use of cast, this is the Qt way to serialize objects
+    QByteArray temp;
+    QDataStream data(&temp, QIODevice::ReadWrite);
+    data << source;
+
+    return temp;
+}
+
+
 
 // 로그인 요청 및 사용자 등록 요청의 메시지 내용 저장
 //프로토콜(4byte) + 닉네임 + 비밀번호
@@ -60,31 +71,32 @@ void ChatServer::getMsgBody(QByteArray& Body,QByteArray str, qint16 strSize)
 
 void ChatServer::SetResMsg(const QString& protocol,QByteArray& resMsg, const QString& msg)
 {
-    qint8 byte = 0;
     qint8 tempLen = protocol.length() + msg.length();
 
 
-    //메시지 길이 정의
-    resMsg+= tempLen;
-
+         //메시지 길이 정의
+    resMsg.prepend(intToArray(tempLen));
     resMsg += ' ';
-    resMsg += protocol.toStdString().c_str();
+
+    resMsg.append(protocol);
     resMsg += ' ';
     resMsg += msg.toUtf8();
 
 }
 void ChatServer::SetResMsg(const QString& protocol,QByteArray& resMsg, QString& msg)
 {
-    qint8 byte = 0;
-    qint8 tempLen = protocol.length() + msg.length();
+    qint32 tempLen = protocol.length() + msg.length();
+
 
 
         //메시지 길이 정의
-    resMsg += tempLen;
+    resMsg.prepend(intToArray(tempLen));
+    resMsg += ' ';
+
+    resMsg.append(protocol);
 
     resMsg += ' ';
-    resMsg += protocol.toStdString().c_str();
-    resMsg += ' ';
+
     resMsg += msg.toUtf8();
 
 }
@@ -95,12 +107,14 @@ void ChatServer::SetResFriendMsg(qint32 numOfFriendCount,const QString& protocol
 
 
     //메시지 길이 정의
-    resMsg += tempLen;
+    //메시지 길이 정의
+    resMsg.prepend(intToArray(tempLen));
+    resMsg += ' ';
 
+    resMsg.append(protocol);
     resMsg += ' ';
-    resMsg += protocol.toStdString().c_str();
-    resMsg += ' ';
-    resMsg += numOfFriendCount;
+
+    resMsg.append(intToArray(numOfFriendCount));
     resMsg += ' ';
     resMsg += msg;
 
@@ -118,21 +132,22 @@ void ChatServer::readyRead()
     qint32 recvMsgLen = recvMsg.length();
 
 
-         //메시지 분리 (길이 , 프로토콜)
-    QStringList length_protocol = QString(recvMsg).split(" ");
-
     QByteArray msgBody;//메시지 내용(프로토콜 + 메시지 내용)
     getMsgBody(msgBody,recvMsg,recvMsgLen); // 메시지 내용 저장
 
-    qint32 recvMsgBodyLen = length_protocol[0].toInt();
-    QString protocolType = length_protocol[1];
+
+        //메시지 분리 (길이 , 프로토콜)
+    QStringList length_protocol = QString(msgBody).split(" ");
+
+
+    QString protocolType = length_protocol[0];
     QString NickName;
 
     //response message
     QByteArray resMsg; //응답 메시지
 
 
-    qDebug() << "msgBodyLen :" <<recvMsgBodyLen<<'\n';
+
 
     qDebug() << "msgBody : " <<msgBody;
 
@@ -261,17 +276,13 @@ void ChatServer::readyRead()
         friendList.insert(NickName,"Choi");
 
         //메시지 형태로 "이름1 이름2 이름3" 공백을 기준으로 하여 클라이언트에게 전송
-        QList<QString> friendIdx = friendList.values(NickName);
+        QList<QString> friendNickNameList = friendList.values(NickName);
 
 
+        friendNickNameList.count();
 
-        foreach(QString friendName,friendIdx )
-        {
-            friendCnt++;
-        }
-
-        qint32 tempCnt = 0;
-        foreach(QString friendName,friendIdx )
+        int tempCnt = 0;
+        foreach(QString friendName,friendNickNameList )
         {
 
             copyFriend += friendName.toStdString().c_str();
