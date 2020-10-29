@@ -6,6 +6,8 @@ UserInfoMgr::UserInfoMgr(QObject *parent) :
 
 }
 
+
+
 void UserInfoMgr::setUserInfo(QString nickName,QString passWord)
 {
     UserInfoMgr::userinfo tempUser;

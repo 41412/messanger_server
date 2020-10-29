@@ -11,12 +11,11 @@ class ChatServer : public QTcpServer
 public:
     ChatServer(QObject *parent=0);
 
-    qint16 getMsgLength(QByteArray str);
     void getMsgBody(QByteArray& Body, QByteArray str, qint16 strSize);
     void SetResMsg(const QString& protocol,QByteArray& resMsg,const QString& msg);//
     void SetResMsg(const QString& protocol,QByteArray& resMsg, QString& msg);//overroding
 
-    void SetResFriendMsg(qint32 numOfFriendCount,const QString& protocol,QByteArray& resMsg, QString& msg);
+    void SetResFriendMsg(qint32 numOfFriendCount,const QString& protocol,QByteArray& resMsg, QByteArray& msg);
 
     void EnrollmentUser(QString nickName,QString passWord);
 
