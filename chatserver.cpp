@@ -34,6 +34,7 @@ void ChatServer::incomingConnection(int socketfd)
             SLOT(disconnected()));
 }
 
+
 // 로그인 요청 및 사용자 등록 요청의 메시지 내용 저장
 //프로토콜(4byte) + 닉네임 + 비밀번호
 void ChatServer::getMsgBody(QByteArray& Body,QByteArray str, qint16 strSize)
@@ -120,7 +121,7 @@ void ChatServer::readyRead()
          //메시지 분리 (길이 , 프로토콜)
     QStringList length_protocol = QString(recvMsg).split(" ");
 
-    QByteArray msgBody;//메시지 내용(길이 + 프로토콜 + 메시지 내용)
+    QByteArray msgBody;//메시지 내용(프로토콜 + 메시지 내용)
     getMsgBody(msgBody,recvMsg,recvMsgLen); // 메시지 내용 저장
 
     qint32 recvMsgBodyLen = length_protocol[0].toInt();
@@ -135,6 +136,7 @@ void ChatServer::readyRead()
 
     qDebug() << "msgBody : " <<msgBody;
 
+         // 회원가입 || 로그인
 
     if(protocolType == "REQUEST_SUBMIT" || protocolType == "REQUEST_LOGIN")
     {
