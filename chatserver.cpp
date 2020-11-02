@@ -3,6 +3,7 @@
 #include "chatserver.h"
 #include "chatdata.h"
 #include "userinfomgr.h"
+#include "widget.h"
 #include <QDebug>
 
 ChatServer::ChatServer(QObject *parent)
@@ -10,7 +11,7 @@ ChatServer::ChatServer(QObject *parent)
 {
 }
 
-void ChatServer::incomingConnection(int socketfd)
+void  ChatServer::incomingConnection(qintptr socketfd)
 {
     qDebug() << Q_FUNC_INFO;
 
@@ -32,6 +33,8 @@ void ChatServer::incomingConnection(int socketfd)
             SLOT(readyRead()));
     connect(client, SIGNAL(disconnected()), this,
             SLOT(disconnected()));
+
+
 }
 
 QByteArray ChatServer::intToArray(qint32 source)
@@ -78,7 +81,7 @@ void ChatServer::SetResMsg(const QString& protocol,QByteArray& resMsg, const QSt
     resMsg.prepend(intToArray(tempLen));
     resMsg += ' ';
 
-    resMsg.append(protocol);
+    resMsg.append(protocol.toUtf8());
     resMsg += ' ';
     resMsg += msg.toUtf8();
 
@@ -93,7 +96,7 @@ void ChatServer::SetResMsg(const QString& protocol,QByteArray& resMsg, QString& 
     resMsg.prepend(intToArray(tempLen));
     resMsg += ' ';
 
-    resMsg.append(protocol);
+    resMsg.append(protocol.toUtf8());
 
     resMsg += ' ';
 
@@ -102,16 +105,15 @@ void ChatServer::SetResMsg(const QString& protocol,QByteArray& resMsg, QString& 
 }
 void ChatServer::SetResFriendMsg(qint32 numOfFriendCount,const QString& protocol,QByteArray& resMsg, QByteArray& msg)
 {
-    qint32 byte = 0;
+
     qint32 tempLen = msg.length()+protocol.length();
 
 
     //메시지 길이 정의
-    //메시지 길이 정의
     resMsg.prepend(intToArray(tempLen));
     resMsg += ' ';
 
-    resMsg.append(protocol);
+    resMsg.append(protocol.toUtf8());
     resMsg += ' ';
 
     resMsg.append(intToArray(numOfFriendCount));
@@ -124,6 +126,8 @@ void ChatServer::SetResFriendMsg(qint32 numOfFriendCount,const QString& protocol
 void ChatServer::readyRead()
 {
     qDebug() << Q_FUNC_INFO;
+
+    Ui::Widget* ui;
     QTcpSocket *client = (QTcpSocket*)sender();
 
 
@@ -185,7 +189,27 @@ void ChatServer::readyRead()
                 return;
             }
             else
-            {
+            {   
+
+                //메신저에 가입된 모든 유저들 관리하는 객체
+              UserInfoMgr userMgr(NickName,PassWord);
+
+
+
+                //기존에 닉네임이 존재하는 경우 등록 불가
+                if(userMgr.isExistName(NickName))
+                {
+                    SetResMsg("SUBMIT_FAIL",resMsg,"nickName Existed");
+                    client->write(resMsg);
+
+                    return;
+
+                }
+
+
+                userMgr.setUserInfo(NickName,PassWord);
+
+
 
                 SetResMsg("SUBMIT_SUCCESS",resMsg,"Enrollment OK");
                 client->write(resMsg);
@@ -199,7 +223,7 @@ void ChatServer::readyRead()
         else if(protocol == "REQUEST_LOGIN")
         {
             qint32 ret = 0;
-            UserInfoMgr::userinfo totalUser;//서버 내 유저현황
+
 
             SetResMsg("LOGIN_SUCCESS",resMsg,"Login OK");
 
@@ -304,12 +328,20 @@ void ChatServer::readyRead()
 
         client->write(resMsg);
 
-
-
-
+        //friendList의 버퍼를 비움
+        friendList.clear();
  ////////////////////////////////////////////////////////////////////////////
         //친구 목록 수신 완료 응답
         //클라이언트로부터 받은 메시지의 프로토콜 체크
+///////////////////////////////////////////////////////////////////////////////
+        //클라이언트에게 방 정보 전달
+
+
+
+
+
+
+
 
     }//end : READY_TO_RECEIVE
 
@@ -350,20 +382,6 @@ void ChatServer::sendUserList()
                       .toUtf8());
 }
 
-//////////////////////////////////////
-/////////////////////////등록///////////////////////////////
-/////////////////////////////////////
-void ChatServer::EnrollmentUser(QString nickName,QString passWord)
-{
-    userinfo readUser;
-
-    readUser.nickName = nickName;
-    readUser.passWord = passWord;
-
-    //userTable.push_back(readUser);
-
-
-}
 
 bool ChatServer::checkPassword(QString passWord) //비밀번호 검증
 {

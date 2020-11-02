@@ -1,9 +1,16 @@
 #include "userinfomgr.h"
 
+
+
 UserInfoMgr::UserInfoMgr(QObject *parent) :
     QObject(parent)
 {
 
+}
+UserInfoMgr::UserInfoMgr(QString nickName,QString password)
+{
+    this->nickName = nickName;
+    this->passWord = password;
 }
 
 
@@ -21,17 +28,24 @@ void UserInfoMgr::setUserInfo(QString nickName,QString passWord)
 }
 
 
-
 bool UserInfoMgr::isExistName(const QString& nickName)
 {
+    QVector<UserInfoMgr::userinfo>::iterator iter;
 
+    for(iter = userTable.begin();iter != userTable.end();iter++)
+    {
+       if(iter->nickName == nickName)
+       {
+           return true;
+       }
+    }
 
 
     return false;
 }
 
-//현재 접속자 조회
-void UserInfoMgr::attendUser()
+//모든 접속자 조회
+void UserInfoMgr::totalUser()
 {
     QVector<UserInfoMgr::userinfo>::iterator iter;
 

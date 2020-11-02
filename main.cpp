@@ -11,7 +11,6 @@ int main(int argc, char *argv[])
     w.setWindowTitle("로그인 서버");
     w.show();
 
-    w.show();
 
 
     return a.exec();

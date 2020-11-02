@@ -18,17 +18,21 @@ public:
 
 
     explicit UserInfoMgr(QObject *parent = 0);
+    explicit UserInfoMgr(QString nickName,QString passWord);
 
     bool isExistName(const QString& nickName);
     void setUserInfo(QString nickName,QString passWord);
-    void attendUser();
+    void totalUser();
 
 signals:
 
 public slots:
 
 private:
-   QVector<userinfo> userTable;
+    QVector<userinfo> userTable;
+    QString nickName;
+    QString passWord;
+
 
 };
 

@@ -4,6 +4,7 @@
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
 
+
 class ChatServer : public QTcpServer
 {
     Q_OBJECT
@@ -18,14 +19,12 @@ public:
 
     void SetResFriendMsg(qint32 numOfFriendCount,const QString& protocol,QByteArray& resMsg, QByteArray& msg);
 
-    void EnrollmentUser(QString nickName,QString passWord);
 
 
 private slots:
     void readyRead(); //메시지 수신
     void disconnected(); // 접속 종료
     void sendUserList(); // 유저정보
-  //  void UserListInfo(); // 접속한 유저들의 정보 저장 (좀 더 고민)
    bool checkPassword(QString password); //비밀번호 검증
 
 signals:
@@ -33,7 +32,7 @@ signals:
     void message_signal(QString msg);// ui에 출력될 메시지 정보 저장
 
 protected:
-    void incomingConnection(int socketfd);
+    virtual void incomingConnection(qintptr socketfd);
 
 private:
     QSet<QTcpSocket*> clients;//set을 구성하여 tcp 소켓을 키를 가짐

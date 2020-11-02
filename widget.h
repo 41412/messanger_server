@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "chatserver.h"
+#include "userinfomgr.h"
 
 namespace Ui {
     class Widget;
@@ -23,6 +24,8 @@ private:
 private slots:
     void slot_clients(int users);
     void slot_message(QString msg);
+
+    void on_UserButton_clicked();
 };
 
 #endif // WIDGET_H
