@@ -25,7 +25,7 @@ private slots:
     void slot_clients(int users);
     void slot_message(QString msg);
 
-    void on_UserButton_clicked();
+    void slot_UserButton();
 };
 
 #endif // WIDGET_H

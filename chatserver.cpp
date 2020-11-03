@@ -127,7 +127,7 @@ void ChatServer::readyRead()
 {
     qDebug() << Q_FUNC_INFO;
 
-    Ui::Widget* ui;
+
     QTcpSocket *client = (QTcpSocket*)sender();
 
 
@@ -208,6 +208,7 @@ void ChatServer::readyRead()
 
 
                 userMgr.setUserInfo(NickName,PassWord);
+
 
 
 

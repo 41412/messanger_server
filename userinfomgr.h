@@ -1,6 +1,10 @@
 #ifndef USERINFOMGR_H
 #define USERINFOMGR_H
 
+
+#include "widget.h"
+#include "chatserver.h"
+#include "chatdata.h"
 #include <QObject>
 #include <QVector>
 #include <QDebug>
@@ -25,7 +29,7 @@ public:
     void totalUser();
 
 signals:
-
+ void message_signal(QString msg);// ui에 출력될 메시지 정보 저장
 public slots:
 
 private:

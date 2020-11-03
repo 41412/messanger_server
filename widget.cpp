@@ -15,7 +15,7 @@ Widget::Widget(QWidget *parent) :
     server = new ChatServer();
     connect(server, SIGNAL(clients_signal(int)), this,SLOT(slot_clients(int)));
     connect(server, SIGNAL(message_signal(QString)), this,SLOT(slot_message(QString)));
-    connect(ui->UserButton,&QPushButton::clicked,this,&Widget::on_UserButton_clicked);
+    connect(ui->UserButton,&QPushButton::clicked,this,&Widget::slot_UserButton);
 
 
     server->listen(QHostAddress::Any, 35000);
@@ -32,11 +32,15 @@ void Widget::slot_message(QString msg)
     ui->textEdit->append(msg);
 }
 
-void Widget::on_UserButton_clicked()
+void Widget::slot_UserButton()
 {
     UserInfoMgr userMgr;
 
-  // ui->textEdit->append(userMgr);
+    ui->textEdit->append("모든 유저 닉네임");
+
+    userMgr.totalUser();
+
+
 }
 
 
