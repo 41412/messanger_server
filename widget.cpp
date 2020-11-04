@@ -12,13 +12,7 @@ Widget::Widget(QWidget *parent) :
 
     ui->setupUi(this);
 
-    server = new ChatServer();
-    connect(server, SIGNAL(clients_signal(int)), this,SLOT(slot_clients(int)));
-    connect(server, SIGNAL(message_signal(QString)), this,SLOT(slot_message(QString)));
-    connect(ui->UserButton,&QPushButton::clicked,this,&Widget::slot_UserButton);
 
-
-    server->listen(QHostAddress::Any, 35000);
 }
 
 void Widget::slot_clients(int users)

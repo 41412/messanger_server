@@ -19,7 +19,7 @@ public:
 
 private:
     Ui::Widget *ui;
-    ChatServer *server;
+    //ChatServer *server;
 
 private slots:
     void slot_clients(int users);

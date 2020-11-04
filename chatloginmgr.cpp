@@ -1,0 +1,58 @@
+#include "chatloginmgr.h"
+#include "chatdataprotocol.h"
+#include "userinfomgr.h"
+#include <QString>
+#include <QDebug>
+
+ChatLoginMgr::ChatLoginMgr(UserInfoMgr* uim)
+    :uim(uim)
+{
+
+}
+void ChatLoginMgr::process(const QMap<QString,QString>& mp,const QByteArray& extradata,BaseSessionProxy* sp)
+{
+    if (!mp.contains("id")) { return; }
+
+    if(mp["id"] == "REQUEST_SUBMIT")
+    {
+        QString nickName = mp["nickname"];
+        QString password = mp["password"];
+
+        //기존에 있는 닉네임인지 확인
+        //확인하여 기존에 있는 닉네임 이면 등록 불가
+        if(uim->isExistName(nickName) == true)
+        {
+            //이미 존재하는 닉네임 이므로
+            //클라이언트에게 등록 요청 불가 메시지 전달
+
+            // sp->send(ChatDataProtocol::makeLoginRes(false));
+        }
+        else
+        {
+            //등록할 수 있는 닉네임이므로
+            //클라이언트에게 등록 요청 허가 메시지 전달
+
+        }
+    }
+
+    if(mp["id"] == "REQUEST_LOGIN")
+    {
+        QString nickName = mp["nickname"];
+        QString password = mp["password"];
+
+        QMap<QString,QString> arg;
+        arg["cmd"] = "login.session_started";
+        arg["nickname"] = nickName;
+        sp->doWork(arg);
+
+        // make packet
+        //sp->send();
+
+        qDebug() << "REQUEST_LOGIN matched";
+    }
+    else
+    {
+        qDebug() << "REQUEST_LOGIN not matched";
+    }
+
+}
