@@ -2,7 +2,9 @@
 #define CHATFRIENDMGR_H
 
 #include "basesessionproxy.h"
-#include "userinfomgr.h"
+
+
+class UserInfoMgr;
 
 class ChatFriendMgr
 {

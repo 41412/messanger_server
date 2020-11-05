@@ -2,6 +2,7 @@
 #define BASESESSIONPROXY_H
 
 #include <QObject>
+#include "chatpacketreceiver.h"
 
 class BaseSessionProxy : public QObject
 {
@@ -12,6 +13,7 @@ public:
     virtual void send(const QByteArray& ){}
     virtual void send(const QStringList& , const QByteArray& ){}
     virtual void updateUserData(const QString& , const QMap<QString,QString>& ){}
+    virtual ChatPacketReceiver* getPacketReceiver(){return nullptr;}
 
 signals:
 

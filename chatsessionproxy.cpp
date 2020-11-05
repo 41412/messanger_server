@@ -1,8 +1,9 @@
 #include "chatsessionproxy.h"
+#include "chatsocketmgr.h"
+#include "chatsession.h"
 
-
-ChatSessionProxy::ChatSessionProxy(ChatSocketMgr* csm,QTcpSocket* socket,ChatUserDataMgr* cudm)
-    :csm(csm),socket(socket),cudm(cudm)
+ChatSessionProxy::ChatSessionProxy(ChatSocketMgr* csm,ChatSession* cs,ChatUserDataMgr* cudm)
+    :csm(csm),cs(cs),cudm(cudm)
 {
 
 }
@@ -13,13 +14,15 @@ void ChatSessionProxy::doWork(const QMap<QString,QString>& m)
         // cudm->addNewUser(...
     }
     else if (m["cmd"] == "login.session_started") {
-        csm->setSocketUser(socket, m["nickname"]);
+        csm->setSessionUser(cs, m["nickname"]);
     }
 }
 
 void ChatSessionProxy::send(const QByteArray& ba)
 {
-    // socket->write(ba);
+    if (cs->isWritable()) {
+        cs->write(ba);
+    }
 }
 
 void ChatSessionProxy::send(const QStringList& userlist, const QByteArray& ba)
@@ -33,3 +36,9 @@ void ChatSessionProxy::updateUserData(const QString& user, const QMap<QString,QS
 {
 
 }
+
+ChatPacketReceiver* ChatSessionProxy::getPacketReceiver()
+{
+    return cs->getReceiver();
+}
+

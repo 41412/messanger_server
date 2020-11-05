@@ -8,6 +8,7 @@
 #include <QTcpSocket>
 #include <QDebug>
 
+#include "chatsession.h"
 #include "chattransmit.h"
 #include "chatuserdatamgr.h"
 
@@ -26,9 +27,9 @@ void  ChatServer::incomingConnection(qintptr socketfd)
 {
     qDebug() << Q_FUNC_INFO;
 
-    QTcpSocket *client = new QTcpSocket();
+    ChatSession *client = new ChatSession();
     client->setSocketDescriptor(socketfd);
-    csm.addTcpSocket(client);
+    csm.addSession(client);
 
     //emit clients_signal(clients.count());
 
@@ -53,24 +54,24 @@ void ChatServer::readyRead()
 {
     qDebug() << Q_FUNC_INFO;
 
-
-    QTcpSocket *client = (QTcpSocket*)sender();
-    ChatSessionProxy csp(&csm,client,cudm);
-    ChatSessionData csd(client->readAll(),&csp);
-
-    ct->process(&csd);
-
-
+    try{
+        ChatSession *client = dynamic_cast<ChatSession*>(sender());
+        ChatSessionProxy csp(&csm,client,cudm);
+        ChatSessionData csd(client->readAll(),&csp);
+        ct->process(&csd);
+    }catch(...) {
+        qFatal("fatal error!!!!!!!");
+    }
 }
 
 void ChatServer::disconnected()
 {
-    QTcpSocket *client = reinterpret_cast<QTcpSocket*>(sender());
+    ChatSession *client = dynamic_cast<ChatSession*>(sender());
     QString str= QString("접속자 연결 종료 :: %1").arg(client->peerAddress().toString());
 
     emit message_signal(str);
 
-    csm.removeTcpSocket(client);
+    csm.removeSession(client);
 
    #if 0
     QTcpSocket *client = (QTcpSocket*)sender();

@@ -1,4 +1,5 @@
 #include "chatfriendmgr.h"
+#include "userinfomgr.h"
 
 ChatFriendMgr::ChatFriendMgr(UserInfoMgr* uim)
     : uim(uim)

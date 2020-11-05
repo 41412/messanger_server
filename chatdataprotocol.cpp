@@ -1,6 +1,8 @@
 #include "chatdataprotocol.h"
 #include <QDataStream>
 
+static const unsigned char signature[8]={0xff,0xee,'M','R','2','0','2','0'};
+
 static QByteArray intToArray(qint32 source)
 {
     // Avoid use of cast, this is the Qt way to serialize objects
@@ -106,15 +108,42 @@ QString ChatDataProtocol::extractProtocol(const QByteArray& message)
     return str;
 }
 
+
+static inline QByteArray fillHeader(const QByteArray& ar)
+{
+    QByteArray b;
+    b.append(0xFF);
+    b.append(0xEE);
+    b.append("MR2020");
+    b.append(intToArray(ar.length()));
+    b += ar;
+    return b;
+}
+
 QByteArray ChatDataProtocol::makeLoginRes(bool success)
 {
-    QByteArray ba;
+    return fillHeader(success ? "LOGIN_SUCCESS" : "LOGIN_FAIL");
+}
 
-    //.. .
-    ba += success ? "LOGIN_SUCCESS" : "LOGIN_FAIL";
-    //...
+static int byteArrayToInt(const QByteArray& ba) {
+    QByteArray baSize = ba.left(4);
+    QDataStream ds(&baSize,QIODevice::ReadOnly);
+    qint32 size=0;
+    ds >> size;
+    return size;
+};
 
-    return ba;
+bool ChatDataProtocol::parseHeader(const QByteArray& message, bool& isValid, int& size)
+{
+    //TODO : find signature in entire message in future...
+    isValid = false;
+    size = 0;
+    if (memcmp(message.constData(), signature, 8) == 0) {
+        isValid = true;
+        size = byteArrayToInt(message.mid(8,4));
+        return true;
+    }
+    return false;
 }
 
 ChatDataProtocol::ChatDataProtocol(QObject *parent) : QObject(parent)
@@ -128,15 +157,29 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
     // messsage를 공백을 기준으로 분리한다.
     // 로그인 요청하는 프로토콜의 경우 분리한 데이터들을 아래와 같이 저장
     // map["ID"] = 프로토콜, map["닉네임"] = 닉네임명, map["비밀번호"] = 비밀번호명
-
     QMap<QString,QString> m;
-    QByteArray baSize = message.left(4);
+
+
+
+    //signature 비교
+    //메세지 프로토콜의 signature가 다른 경우
+    if(memcmp(message.constData(),signature,8) != 0)
+    {
+
+
+        return m;
+    }
+
+
+
+    QByteArray baSize = message.mid(8,4);
     QDataStream ds(&baSize,QIODevice::ReadOnly);
     qint32 size=0;
     ds >> size;
 
+
     //메시지 사이즈 ds 사이즈 비교
-    QByteArray body = message.mid(5);
+    QByteArray body = message.mid(12);
     QString pid = extractProtocol(body);
 
     if (pid == "REQUEST_SUBMIT" || pid == "REQUEST_LOGIN") {

@@ -3,8 +3,8 @@
 #include <QByteArray>
 #include <QMap>
 #include <basesessionproxy.h>
-//#include "userinfomgr.h"
 
+class ChatLoginMgr;
 class UserInfoMgr;
 
 class ChatLoginMgr

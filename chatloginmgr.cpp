@@ -4,6 +4,8 @@
 #include <QString>
 #include <QDebug>
 
+
+
 ChatLoginMgr::ChatLoginMgr(UserInfoMgr* uim)
     :uim(uim)
 {
@@ -24,13 +26,13 @@ void ChatLoginMgr::process(const QMap<QString,QString>& mp,const QByteArray& ext
         {
             //이미 존재하는 닉네임 이므로
             //클라이언트에게 등록 요청 불가 메시지 전달
-
-            // sp->send(ChatDataProtocol::makeLoginRes(false));
+            sp->send(ChatDataProtocol::makeLoginRes(false));
         }
         else
         {
             //등록할 수 있는 닉네임이므로
             //클라이언트에게 등록 요청 허가 메시지 전달
+            sp->send(ChatDataProtocol::makeLoginRes(true));
 
         }
     }
@@ -45,8 +47,11 @@ void ChatLoginMgr::process(const QMap<QString,QString>& mp,const QByteArray& ext
         arg["nickname"] = nickName;
         sp->doWork(arg);
 
+        // check log in & password
+
         // make packet
-        //sp->send();
+        QByteArray res = ChatDataProtocol::makeLoginRes(true);
+        sp->send(res);
 
         qDebug() << "REQUEST_LOGIN matched";
     }

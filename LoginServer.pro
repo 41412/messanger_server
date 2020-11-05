@@ -11,7 +11,9 @@ SOURCES += main.cpp\
     chatdataprotocol.cpp \
     chatfriendmgr.cpp \
     chatloginmgr.cpp \
+    chatpacketreceiver.cpp \
     chatroommgr.cpp \
+    chatsession.cpp \
     chatsessiondata.cpp \
     chatsessionproxy.cpp \
     chatsocketmgr.cpp \
@@ -28,9 +30,11 @@ HEADERS  += widget.h \
     chatdataprotocol.h \
     chatfriendmgr.h \
     chatloginmgr.h \
+    chatpacketreceiver.h \
     chatroommgr.h \
     chatserver.h \
     chatdata.h \
+    chatsession.h \
     chatsessiondata.h \
     chatsessionproxy.h \
     chatsocketmgr.h \

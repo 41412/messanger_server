@@ -1,23 +1,28 @@
 #ifndef CHATSESSIONPROXY_H
 #define CHATSESSIONPROXY_H
 
-#include "basesessionproxy.h"
-#include "chatsocketmgr.h"
 #include "chatuserdatamgr.h"
-#include <QTcpSocket>
+#include "basesessionproxy.h"
+#include <QMap>
+#include <QString>
+
+class ChatSession;
+class ChatSocketMgr;
 
 class ChatSessionProxy : public BaseSessionProxy
 {
 
 public:
-    explicit ChatSessionProxy(ChatSocketMgr* csm,QTcpSocket* socket,ChatUserDataMgr* cudm);
+    explicit ChatSessionProxy(ChatSocketMgr* csm,ChatSession* cs,ChatUserDataMgr* cudm);
     virtual void doWork(const QMap<QString, QString>& m) override;
     virtual void send(const QByteArray& ba) override;
     virtual void send(const QStringList& userlist, const QByteArray& ba) override;
     virtual void updateUserData(const QString& user, const QMap<QString,QString>& m) override;
+    virtual ChatPacketReceiver* getPacketReceiver() override;
+
 private:
     ChatSocketMgr* csm;
-    QTcpSocket* socket;
+    ChatSession * cs;
     ChatUserDataMgr* cudm;
 
 };

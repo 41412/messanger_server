@@ -13,6 +13,8 @@ public:
     static QString extractProtocol(const QByteArray& message);
 
     static QByteArray makeLoginRes(bool succese);
+    static bool parseHeader(const QByteArray& message, bool& isValid, int& size);
+    static int getHeaderSize() { return 12; }
 
 private:
     QMap<QString,QByteArray> messageMap;
