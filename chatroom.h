@@ -4,13 +4,13 @@
 #include <QObject>
 #include <QTime>
 
-class chatRoom : public QObject
+class ChatRoom : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit chatRoom(QObject *parent = 0);
-    explicit chatRoom(QString roomId,QString title,QString admin);
+    explicit ChatRoom(QObject *parent = 0);
+    explicit ChatRoom(QString roomId,QString title,QString admin);
 
 
     void setRoomID(QString nickName);

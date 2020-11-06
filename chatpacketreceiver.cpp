@@ -50,7 +50,15 @@ int ChatPacketReceiver::process(const QByteArray& ba)
                 buffer.clear();
             }
         }
+    }// end while
+
+    //remainSize가 남아있는 경우
+    //
+    if(remainSize > 0)
+    {
+        return packets.size()-1;
     }
+
     return packets.size();
 }
 

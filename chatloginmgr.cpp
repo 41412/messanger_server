@@ -11,6 +11,17 @@ ChatLoginMgr::ChatLoginMgr(UserInfoMgr* uim)
 {
 
 }
+
+bool ChatLoginMgr::checkPassword(const QString& password)
+{
+    if(password.length() < 4)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void ChatLoginMgr::process(const QMap<QString,QString>& mp,const QByteArray& extradata,BaseSessionProxy* sp)
 {
     if (!mp.contains("id")) { return; }
@@ -48,6 +59,12 @@ void ChatLoginMgr::process(const QMap<QString,QString>& mp,const QByteArray& ext
         sp->doWork(arg);
 
         // check log in & password
+        // 비밀번호가 유효하지 않거나 이미 로그인 되어있는 경우
+        //
+        if(checkPassword(password) == false)
+        {
+
+        }
 
         // make packet
         QByteArray res = ChatDataProtocol::makeLoginRes(true);

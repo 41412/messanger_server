@@ -13,7 +13,7 @@ class ChatLoginMgr
 public:
     explicit ChatLoginMgr(UserInfoMgr* uim);
     void process(const QMap<QString,QString>& mp,const QByteArray& extraData,BaseSessionProxy* sp);
-    bool checkPassword(QString password);
+    bool checkPassword(const QString& password);
 
 private:
     UserInfoMgr* uim;

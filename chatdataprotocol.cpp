@@ -125,6 +125,13 @@ QByteArray ChatDataProtocol::makeLoginRes(bool success)
     return fillHeader(success ? "LOGIN_SUCCESS" : "LOGIN_FAIL");
 }
 
+QByteArray ChatDataProtocol::makeResCreateRoom(const QString& id)
+{
+    QByteArray ba;
+    // fill body
+    return ba;
+}
+
 static int byteArrayToInt(const QByteArray& ba) {
     QByteArray baSize = ba.left(4);
     QDataStream ds(&baSize,QIODevice::ReadOnly);
@@ -165,7 +172,6 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
     //메세지 프로토콜의 signature가 다른 경우
     if(memcmp(message.constData(),signature,8) != 0)
     {
-
 
         return m;
     }

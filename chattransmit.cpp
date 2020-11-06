@@ -23,6 +23,7 @@ void ChatTransmit::process(ChatSessionData* data)
     if(cpr == nullptr)
     {
         //에러
+
     }
     else
     {

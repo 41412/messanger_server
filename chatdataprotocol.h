@@ -12,9 +12,11 @@ public:
     QMap<QString,QString> ReceiveProtocol(const QByteArray& message, QByteArray& extra);
     static QString extractProtocol(const QByteArray& message);
 
-    static QByteArray makeLoginRes(bool succese);
     static bool parseHeader(const QByteArray& message, bool& isValid, int& size);
     static int getHeaderSize() { return 12; }
+
+    static QByteArray makeLoginRes(bool succese);
+    static QByteArray makeResCreateRoom(const QString& id);
 
 private:
     QMap<QString,QByteArray> messageMap;
