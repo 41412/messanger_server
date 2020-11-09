@@ -112,8 +112,8 @@ QString ChatDataProtocol::extractProtocol(const QByteArray& message)
 static inline QByteArray fillHeader(const QByteArray& ar)
 {
     QByteArray b;
-    b.append(0xFF);
-    b.append(0xEE);
+    b.append(0xff);
+    b.append(0xee);
     b.append("MR2020");
     b.append(intToArray(ar.length()));
     b += ar;
@@ -129,6 +129,8 @@ QByteArray ChatDataProtocol::makeResCreateRoom(const QString& id)
 {
     QByteArray ba;
     // fill body
+    ba = id.toStdString().c_str();
+
     return ba;
 }
 
@@ -152,6 +154,11 @@ bool ChatDataProtocol::parseHeader(const QByteArray& message, bool& isValid, int
     }
     return false;
 }
+
+
+
+
+
 
 ChatDataProtocol::ChatDataProtocol(QObject *parent) : QObject(parent)
 {
@@ -199,9 +206,21 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
         else {
             // nothing
         }
+    }// end if("REQUEST_SUBMIT" || "REQUEST_LOGIN")
+
+    else if (pid =="REQUEST_CREATE_CHATROOM" )
+    {
+
     }
 
-    //else if ()
+    else if(pid =="REQUEST_INVITE_USER")
+    {
+
+    }
+    else if(pid == "REQUEST_LEAVE_CHATROOM")
+    {
+
+    }
 
 #if 0
     QTcpSocket *client = (QTcpSocket*)sender();

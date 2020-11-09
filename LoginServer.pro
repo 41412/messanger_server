@@ -8,6 +8,7 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
     basesessionproxy.cpp \
+    chatconversation.cpp \
     chatdataprotocol.cpp \
     chatfriendmgr.cpp \
     chatloginmgr.cpp \
@@ -27,6 +28,7 @@ SOURCES += main.cpp\
 
 HEADERS  += widget.h \
     basesessionproxy.h \
+    chatconversation.h \
     chatdataprotocol.h \
     chatfriendmgr.h \
     chatloginmgr.h \

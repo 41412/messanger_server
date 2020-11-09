@@ -25,7 +25,7 @@ public:
 private:
     QString generateRoomId(const QString& nickName);
     QMap<QString,QSharedPointer<ChatRoom>> mpRooms;
-
+    ChatRoom CR;
 
 };
 
