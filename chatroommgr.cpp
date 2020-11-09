@@ -38,6 +38,9 @@ void ChatRoomMgr::process(const QMap<QString,QString>& mp,const QByteArray& extr
     //방에 속하는 유저들 목록 요청
     else if (mp["id"] == "req.userlist") {
 
+        //클라이언트가
+
+
     }
 
     // 방삭재 요청

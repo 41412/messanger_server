@@ -1,6 +1,6 @@
 #include "chatroom.h"
 
-chatRoom::chatRoom(QString roomId,QString title,QString admin)
+ChatRoom::ChatRoom(QString roomId,QString title,QString admin)
 {//변수 초기화
 
     this->roomId = roomId;
@@ -11,12 +11,12 @@ chatRoom::chatRoom(QString roomId,QString title,QString admin)
 
 
 
-void chatRoom::setRoomID(QString nickName)
+void ChatRoom::setRoomID(QString nickName)
 {
     roomId = QTime::currentTime().toString() + nickName;
 }
 
-QString chatRoom::getRoomId()
+QString ChatRoom::getRoomId()
 {
     return roomId;
 }

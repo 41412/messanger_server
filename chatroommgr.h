@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include "basesessionproxy.h"
+#include "chatroom.h"
+#include <QMap>
 
 class ChatRoomMgr : public QObject
 {
@@ -10,7 +12,20 @@ class ChatRoomMgr : public QObject
 public:
     explicit ChatRoomMgr(QObject *parent = nullptr);
     void process(const QMap<QString,QString>& mp,const QByteArray& extradata,BaseSessionProxy* sp);
-signals:
+    bool addUserInRoom(const QString& roomId);
+    bool removeUserInRoom(const QString& roomId);
+    bool addRoom(const QString& roomId,const QString& roomTitle= "");
+    void removeRoom(const QString& roomId);
+    //void findRoom(const QString)
+    bool isExistRoom(const QString& roomId);
+    QStringList getRoomUsers(const QString& roomId);
+    QStringList getConversation(const QString& roomId);//todo set update option
+    QStringList insertChat(const QString& roomId,const QString& message);//todo set update option
+
+private:
+    QString generateRoomId(const QString& nickName);
+    QMap<QString,QSharedPointer<ChatRoom>> mpRooms;
+
 
 };
 
