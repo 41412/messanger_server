@@ -19,7 +19,7 @@ public:
     //조회
     QStringList queryChat(const QString& date,qint32 count);
     //추가
-    void addChat(const QString& date,const QString& fromUser,const QString& message);
+    int addChat(const QString& date,const QString& fromUser,const QString& message);
 
 private:
     QVector<Chat> vt;

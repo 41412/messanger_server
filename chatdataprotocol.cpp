@@ -1,5 +1,6 @@
 #include "chatdataprotocol.h"
 #include <QDataStream>
+#include <QDebug>
 
 static const unsigned char signature[8]={0xff,0xee,'M','R','2','0','2','0'};
 
@@ -45,10 +46,10 @@ static void SetResMsg(const QString& protocol,QByteArray& resMsg, const QString&
 
     //메시지 길이 정의
     resMsg.prepend(intToArray(tempLen));
-    resMsg += ' ';
+    resMsg += 29;
 
     resMsg.append(protocol.toUtf8());
-    resMsg += ' ';
+    resMsg += 29;
     resMsg += msg.toUtf8();
 
 }
@@ -61,11 +62,11 @@ static void SetResMsg(const QString& protocol,QByteArray& resMsg, QString& msg)
 
     //메시지 길이 정의
     resMsg.prepend(intToArray(tempLen));
-    resMsg += ' ';
+    resMsg += 29;
 
     resMsg.append(protocol.toUtf8());
 
-    resMsg += ' ';
+    resMsg += 29;
 
     resMsg += msg.toUtf8();
 
@@ -79,13 +80,13 @@ static void SetResFriendMsg(qint32 numOfFriendCount,const QString& protocol,QByt
 
     //메시지 길이 정의
     resMsg.prepend(intToArray(tempLen));
-    resMsg += ' ';
+    resMsg += 29;
 
     resMsg.append(protocol.toUtf8());
-    resMsg += ' ';
+    resMsg += 29;
 
     resMsg.append(intToArray(numOfFriendCount));
-    resMsg += ' ';
+    resMsg += 29;
     resMsg += msg;
 
 }
@@ -97,9 +98,8 @@ QString ChatDataProtocol::extractProtocol(const QByteArray& message)
 
     for(idx=0;idx < message.length();idx++)
     {
-        if(message.at(idx) == ' ')
+        if(message.at(idx) == 29)
         {
-
             break;
         }
         str+=message[idx];
@@ -117,6 +117,7 @@ static inline QByteArray fillHeader(const QByteArray& ar)
     b.append("MR2020");
     b.append(intToArray(ar.length()));
     b += ar;
+
     return b;
 }
 
@@ -128,10 +129,34 @@ QByteArray ChatDataProtocol::makeLoginRes(bool success)
 QByteArray ChatDataProtocol::makeResCreateRoom(const QString& id)
 {
     QByteArray ba;
+    //fill Header
+    ba = fillHeader("RESPONSE_CREATE_CHATROOM");
+    ba += 29;
     // fill body
-    ba = id.toStdString().c_str();
+    ba += id.toStdString().c_str();
+
+
 
     return ba;
+}
+
+QByteArray ChatDataProtocol::makeResUpdateChat(const QString& roomid,const QString& user,const QString& timestamp,int index,const QString& message)
+{
+    QByteArray ba;
+
+    ba +="UPDATE_CHAT";
+    ba += 29;
+    ba += roomid.toUtf8();
+    ba += 29;
+    ba += user.toUtf8();
+    ba += timestamp.toUtf8();
+    ba += 29;
+    ba += QString::number(index).toUtf8();
+    ba += 29;
+    ba += message.toUtf8();
+
+
+    return fillHeader(ba);
 }
 
 static int byteArrayToInt(const QByteArray& ba) {
@@ -196,7 +221,7 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
     QString pid = extractProtocol(body);
 
     if (pid == "REQUEST_SUBMIT" || pid == "REQUEST_LOGIN") {
-        QStringList tokens = QString::fromUtf8(body).split(" ");
+        QStringList tokens = QString::fromUtf8(body).split(29);
         m["target"] = "login";
         m["id"] = pid;
         if (tokens.size() == 3) {
@@ -210,11 +235,57 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
 
     else if (pid =="REQUEST_CREATE_CHATROOM" )
     {
+        QStringList tokens = QString::fromUtf8(body).split(29);
+
+        if(tokens.size() < 4)
+        {
+            qDebug() << "Insufficient message tokens";
+
+        }
+        else
+        {
+
+            m["target"] = "room";
+            m["id"] = pid;
+            m["user"] = tokens[1];
+            m["count"] = tokens[2];
+
+            int index = body.indexOf(tokens[3].toUtf8());
+
+            if(index == -1)
+            {
+                qDebug() << "error index";
+            }
+            else
+            {
+                m["members"] = body.mid(index).replace(29, ',');
+                qDebug() << m["members"];
+            }
+        }
+
 
     }
 
-    else if(pid =="REQUEST_INVITE_USER")
+    else if(pid =="REQUEST_SEND_CHAT")
     {
+        QStringList tokens = QString::fromUtf8(body).split(29);
+
+        //예외처리 받은 토큰 사이즈가 규정된 사이즈보다 작은 경우
+        if(tokens.size() < 4)
+        {
+               qDebug() << "Insufficient message tokens";
+        }
+        else
+        {
+            m["target"] = "room";
+            m["id"] = pid;
+            m["roomid"] = tokens[1];
+            m["user"] = tokens[2];
+            m["message"] = tokens[3];
+
+
+
+        }
 
     }
     else if(pid == "REQUEST_LEAVE_CHATROOM")

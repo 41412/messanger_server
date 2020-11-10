@@ -4,6 +4,7 @@
 #include <QObject>
 #include "basesessionproxy.h"
 #include "chatroom.h"
+#include <QSharedPointer>
 #include <QMap>
 
 class ChatRoomMgr : public QObject
@@ -12,19 +13,19 @@ class ChatRoomMgr : public QObject
 public:
     explicit ChatRoomMgr(QObject *parent = nullptr);
     void process(const QMap<QString,QString>& mp,const QByteArray& extradata,BaseSessionProxy* sp);
-    bool addUserInRoom(const QString& roomId);
+    bool addUserInRoom(const QString& nickname,const QString& roomId);
     bool removeUserInRoom(const QString& roomId);
     bool addRoom(const QString& roomId,const QString& roomTitle= "");
-    void removeRoom(const QString& roomId);
+    bool removeRoom(const QString& roomId);
     //void findRoom(const QString)
     bool isExistRoom(const QString& roomId);
     QStringList getRoomUsers(const QString& roomId);
     QStringList getConversation(const QString& roomId);//todo set update option
-    QStringList insertChat(const QString& roomId,const QString& message);//todo set update option
+    int insertChat(const QString& roomId,const QString& nickname,const QString& message,const QString& date);//todo set update option
 
 private:
     QString generateRoomId(const QString& nickName);
-    QMap<QString,QSharedPointer<ChatRoom>> mpRooms;
+    QMap<QString,QSharedPointer<ChatRoom>> mpRooms;//key : roomId, value : ChatRoom
     ChatRoom CR;
 
 };

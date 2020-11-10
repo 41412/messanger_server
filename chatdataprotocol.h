@@ -17,6 +17,7 @@ public:
 
     static QByteArray makeLoginRes(bool succese);
     static QByteArray makeResCreateRoom(const QString& id);
+    static QByteArray makeResUpdateChat(const QString& roomid,const QString& user,const QString& timestamp,int index,const QString& message);
 
 private:
     QMap<QString,QByteArray> messageMap;

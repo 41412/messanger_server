@@ -13,7 +13,7 @@ QStringList ChatConversation::queryChat(const QString& date,qint32 count)
 
 
 //추가
-void ChatConversation::addChat(const QString& date,const QString& fromUser,const QString& message)
+int ChatConversation::addChat(const QString& date,const QString& fromUser,const QString& message)
 {
     Chat temp;
 
@@ -25,5 +25,5 @@ void ChatConversation::addChat(const QString& date,const QString& fromUser,const
     vt.push_back(temp);
     qDebug() << __FUNCTION__ << "TestCode";
 
-
+    return vt.count()-1;
 }

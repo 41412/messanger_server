@@ -5,12 +5,10 @@
 #include <QTime>
 #include "chatconversation.h"
 
-class ChatRoom : public QObject
+class ChatRoom
 {
-    Q_OBJECT
-
 public:
-    explicit ChatRoom(QObject *parent = 0);
+    explicit ChatRoom();
     explicit ChatRoom(QString roomId,QString admin);
 
 
@@ -19,15 +17,13 @@ public:
 //    void setTitle();
 
     //대화저장
-    void storeChat(const QString& chat,const QString& nickname,const QString& date);
+    int storeChat(const QString& chat,const QString& nickname,const QString& date);
     //방에 속하는 유저
     QStringList getRoomUserList();
     //특정 유저 체크
     bool isUserRoom(const QString& nickName);
-
-signals:
-
-public slots:
+    bool addUser(const QString& nickname);
+    bool addUsers(const QString& nickname, const QString& delimiter = ",");
     
 private:
     QString roomId;

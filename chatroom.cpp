@@ -1,4 +1,10 @@
 #include "chatroom.h"
+#include <QDebug>
+
+ChatRoom::ChatRoom()
+{
+
+}
 
 ChatRoom::ChatRoom(QString roomId,QString admin)
 {//변수 초기화
@@ -21,9 +27,10 @@ QString ChatRoom::getRoomId()
     return roomId;
 }
 
-void ChatRoom::storeChat(const QString& chat,const QString& nickname,const QString& date)
+int ChatRoom::storeChat(const QString& chat,const QString& nickname,const QString& date)
 {
-    cc.addChat(date,nickname,chat);
+
+    return cc.addChat(date,nickname,chat);
 
 }
 QStringList ChatRoom::getRoomUserList()
@@ -42,10 +49,35 @@ bool ChatRoom::isUserRoom(const QString& nickName)
         if(nickName == roomUserNames[i])
         {
             return true;
-            break;
+            //break;//->?
         }
     }
 
     return false;
+}
+//todo **
+bool ChatRoom::addUser(const QString& nickname)
+{
+
+
+    return false;
+}
+bool ChatRoom::addUsers(const QString& nickname, const QString& delimiter)
+{
+    QStringList nicknameList = nickname.split(delimiter);
+
+    for(auto n: nicknameList) {
+        //기존에 있는 닉네임 체크
+        if(roomUserNames.contains(n) == true)
+        {
+            qDebug() << "User already exists.";
+        }
+        else
+        {
+            roomUserNames.push_back(n);
+        }
+    }
+
+    return true;
 }
 
