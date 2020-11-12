@@ -10,7 +10,6 @@ ChatRoom::ChatRoom(QString roomId,QString admin)
 {//변수 초기화
 
     this->roomId = roomId;
-
     this->admin = admin;
 
 }
@@ -49,7 +48,6 @@ bool ChatRoom::isUserRoom(const QString& nickName)
         if(nickName == roomUserNames[i])
         {
             return true;
-            //break;//->?
         }
     }
 
@@ -59,8 +57,16 @@ bool ChatRoom::isUserRoom(const QString& nickName)
 bool ChatRoom::addUser(const QString& nickname)
 {
 
+    if(roomUserNames.contains(nickname) == true)
+    {
+        qDebug() <<nickname <<' '<< "User already exists.";
+    }
+    else
+    {
+        roomUserNames.push_back(nickname);
+    }
 
-    return false;
+    return true;
 }
 bool ChatRoom::addUsers(const QString& nickname, const QString& delimiter)
 {
@@ -70,7 +76,7 @@ bool ChatRoom::addUsers(const QString& nickname, const QString& delimiter)
         //기존에 있는 닉네임 체크
         if(roomUserNames.contains(n) == true)
         {
-            qDebug() << "User already exists.";
+            qDebug() <<nickname <<' '<< "User already exists.";
         }
         else
         {
@@ -79,5 +85,22 @@ bool ChatRoom::addUsers(const QString& nickname, const QString& delimiter)
     }
 
     return true;
+}
+
+bool ChatRoom::removeUsers(const QString& nickname)
+{
+    //방안에 유저들중 나간 유저의 이름을 지우고 남아있는 유저들에게 업데이트
+    if(roomUserNames.contains(nickname) == false)
+    {
+        qDebug() << "There are no nicknames to delete.";
+    }
+    else
+    {
+        roomUserNames.removeOne(nickname);
+
+        return true;
+    }
+
+    return false;
 }
 

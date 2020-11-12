@@ -15,6 +15,8 @@ void ChatSessionProxy::doWork(const QMap<QString,QString>& m)
     }
     else if (m["cmd"] == "login.session_started") {
         csm->setSessionUser(cs, m["nickname"]);
+
+        //  user data manager
     }
 }
 
@@ -61,4 +63,7 @@ ChatPacketReceiver* ChatSessionProxy::getPacketReceiver()
 {
     return cs->getReceiver();
 }
-
+QString ChatSessionProxy::getUserName()
+{
+    return cs->getNickName();
+}

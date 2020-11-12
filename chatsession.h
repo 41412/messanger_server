@@ -11,8 +11,16 @@ public:
     virtual ~ChatSession();
     ChatPacketReceiver* getReceiver();
 
+    void setNickName(const QString& nickname){
+        name = nickname;
+    }
+    const QString& getNickName() {
+        return name;
+    }
+
 private:
     ChatPacketReceiver cpr;
+    QString name;
 };
 
 #endif // CHATSESSION_H

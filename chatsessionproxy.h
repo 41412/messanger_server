@@ -19,6 +19,7 @@ public:
     virtual void send(const QStringList& userlist, const QByteArray& ba) override;
     virtual void updateUserData(const QString& user, const QMap<QString,QString>& m) override;
     virtual ChatPacketReceiver* getPacketReceiver() override;
+    virtual QString getUserName() override;
 
 private:
     ChatSocketMgr* csm;

@@ -14,6 +14,7 @@ public:
     virtual void send(const QStringList& , const QByteArray& ){}
     virtual void updateUserData(const QString& , const QMap<QString,QString>& ){}
     virtual ChatPacketReceiver* getPacketReceiver(){return nullptr;}
+    virtual QString getUserName(){return QString();}
 
 signals:
 

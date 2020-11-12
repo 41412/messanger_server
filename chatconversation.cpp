@@ -17,7 +17,6 @@ int ChatConversation::addChat(const QString& date,const QString& fromUser,const 
 {
     Chat temp;
 
-
     temp.date = date;
     temp.fromUser = fromUser;
     temp.message = message;

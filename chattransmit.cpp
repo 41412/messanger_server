@@ -5,8 +5,8 @@ ChatTransmit::ChatTransmit(QObject *parent) : QObject(parent)
 {
 
 }
-ChatTransmit::ChatTransmit(ChatRoomMgr* rm ,ChatLoginMgr* lm,ChatFriendMgr* fm)
-    :QObject(), rm(rm),lm(lm),fm(fm)
+ChatTransmit::ChatTransmit(ChatLoginMgr* lm,ChatUserDataMgr* cudm)
+    :QObject(),lm(lm),cudm(cudm)
 {
 
 
@@ -39,11 +39,8 @@ void ChatTransmit::process(ChatSessionData* data)
             //1. 해당하는 프로토콜에 로그인 매니저로 프로토콜 확인
             // if (mp["target"] == "login")
             lm->process(mp, extra, data->getProxy());
+            cudm->process(mp, extra, data->getProxy());
 
-            //2. 해당하는 프로토콜에 룸 매니저로 프로토콜 확인
-            rm->process(mp, extra, data->getProxy());
-            //3. 해당하는 프로토콜에 친구 매니저로 프로토콜 확인
-            fm->process(mp, extra, data->getProxy());
         }
     }
 }

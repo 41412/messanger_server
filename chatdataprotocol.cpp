@@ -125,19 +125,105 @@ QByteArray ChatDataProtocol::makeLoginRes(bool success)
 {
     return fillHeader(success ? "LOGIN_SUCCESS" : "LOGIN_FAIL");
 }
+QByteArray ChatDataProtocol::makeSendStart()
+{
+   return fillHeader("USERDATA_SEND_START");
+}
+
+QByteArray ChatDataProtocol::makeSendEnd()
+{
+   return fillHeader("USERDATA_SEND_End");
+}
+QByteArray ChatDataProtocol::makeSendFriendList(const QStringList& friendList)
+{
+    QByteArray ba;
+
+    ba += 29;
+    ba += "SEND_FRIENDLIST";
+
+    ba += 29;
+    ba += QString::number(friendList.count()).toUtf8();//친구의 수 저장
+    //클라이언트에게 전달해줄 친구 리스트 저장
+    for(auto n : friendList)
+    {
+        ba += 29;
+        ba += n.toStdString().c_str();
+    }
+
+#if 0
+    ba += "SEND_FRIENDLIST";
+    ba +=29;
+    ba +="3";
+    ba += 29;
+    ba += "bogeun";
+    ba += 29;
+    ba += "mike";
+    ba += 29;
+    ba += "wooyoung";
+
+#endif
+
+
+    return fillHeader(ba);
+}
+
+//to do
+QByteArray ChatDataProtocol::makeSendChatRoomList(const QStringList& roomlist, std::function<void(const QString&,QStringList&)> callback)
+{
+    QByteArray ba;
+
+    //loop
+    //get userlist
+    for(auto roomid:roomlist)
+    {
+        QStringList l;
+        callback(roomid,l);
+
+        // set room id
+        // append atendees
+    }
+
+#if defined(QT_DEBUG)
+    ba += "SEND_CHATROOMLIST";
+    ba +=29;
+    ba +="2";
+    ba += 29;
+    ba += "2020.11.11.22.33.44bogeun";
+    ba += 30;
+    ba += "3";
+    ba += 30;
+    ba += "bogeun";
+    ba += 30;
+    ba += "mike";
+    ba += 30;
+    ba += "wooyoung";
+
+    ba += 29;
+    ba += "2020.11.11.22.33.44mike";
+    ba += 30;
+    ba += "2";
+    ba += 30;
+    ba += "mike";
+    ba += 30;
+    ba += "boguen";
+
+#endif
+
+
+
+    return fillHeader(ba);
+}
 
 QByteArray ChatDataProtocol::makeResCreateRoom(const QString& id)
 {
     QByteArray ba;
-    //fill Header
-    ba = fillHeader("RESPONSE_CREATE_CHATROOM");
+
     ba += 29;
     // fill body
     ba += id.toStdString().c_str();
 
-
-
-    return ba;
+    //fill Header
+    return fillHeader(ba);
 }
 
 QByteArray ChatDataProtocol::makeResUpdateChat(const QString& roomid,const QString& user,const QString& timestamp,int index,const QString& message)
@@ -154,6 +240,20 @@ QByteArray ChatDataProtocol::makeResUpdateChat(const QString& roomid,const QStri
     ba += QString::number(index).toUtf8();
     ba += 29;
     ba += message.toUtf8();
+
+
+    return fillHeader(ba);
+}
+
+QByteArray ChatDataProtocol::makeResLeaveRoom(const QString& roomid,const QString& user)
+{
+    QByteArray ba;
+
+    ba += "RESPONSE_LEAVE_USER";
+    ba += 29;
+    ba += roomid.toUtf8();
+    ba += 29;
+    ba += user.toUtf8();
 
 
     return fillHeader(ba);
@@ -198,8 +298,6 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
     // map["ID"] = 프로토콜, map["닉네임"] = 닉네임명, map["비밀번호"] = 비밀번호명
     QMap<QString,QString> m;
 
-
-
     //signature 비교
     //메세지 프로토콜의 signature가 다른 경우
     if(memcmp(message.constData(),signature,8) != 0)
@@ -207,8 +305,6 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
 
         return m;
     }
-
-
 
     QByteArray baSize = message.mid(8,4);
     QDataStream ds(&baSize,QIODevice::ReadOnly);
@@ -232,7 +328,33 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
             // nothing
         }
     }// end if("REQUEST_SUBMIT" || "REQUEST_LOGIN")
+    else if(pid == "REQUEST_USERDATA")
+    {
+        QStringList tokens = QString::fromUtf8(body).split(29);
 
+//        if(tokens.size() < 2)
+//        {
+//            qDebug() << "Insufficient message tokens";
+
+//        }
+//        else
+        {
+            m["target"] = "friend";
+            m["id"] = pid;
+            //m["user"] = tokens[1];
+        }
+
+    }
+    else if(pid == "READY_TO_RECEIVE")
+    {
+        QStringList tokens = QString::fromUtf8(body).split(29);
+
+        {
+            m["target"] = "friend";
+            m["id"] = pid;
+        }
+
+    }
     else if (pid =="REQUEST_CREATE_CHATROOM" )
     {
         QStringList tokens = QString::fromUtf8(body).split(29);
@@ -273,7 +395,7 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
         //예외처리 받은 토큰 사이즈가 규정된 사이즈보다 작은 경우
         if(tokens.size() < 4)
         {
-               qDebug() << "Insufficient message tokens";
+            qDebug() << "Insufficient message tokens";
         }
         else
         {
@@ -283,13 +405,24 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
             m["user"] = tokens[2];
             m["message"] = tokens[3];
 
-
-
         }
 
     }
     else if(pid == "REQUEST_LEAVE_CHATROOM")
     {
+        QStringList tokens = QString::fromUtf8(body).split(29);
+
+        if(tokens.size() < 3)
+        {
+            qDebug() << "Insufficient message tokens";
+        }
+        else
+        {
+            m["target"] = "room";
+            m["id"] = pid;
+            m["roomid"] = tokens[1];
+            m["user"] = tokens[2];
+        }
 
     }
 

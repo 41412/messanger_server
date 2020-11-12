@@ -17,8 +17,16 @@ public:
 
     static QByteArray makeLoginRes(bool succese);
     static QByteArray makeResCreateRoom(const QString& id);
-    static QByteArray makeResUpdateChat(const QString& roomid,const QString& user,const QString& timestamp,int index,const QString& message);
 
+    static QByteArray makeSendStart();
+    static QByteArray makeSendEnd();
+
+    static QByteArray makeSendFriendList(const QStringList& friendList);
+    //static QByteArray makeSendChatRoomList(const QStringList& roomlist, void (*filler)(const QString&,QStringList&));
+    static QByteArray makeSendChatRoomList(const QStringList& roomlist, std::function<void(const QString&,QStringList&)> callback);
+
+    static QByteArray makeResUpdateChat(const QString& roomid,const QString& user,const QString& timestamp,int index,const QString& message);
+    static QByteArray makeResLeaveRoom(const QString& roomid,const QString& user);
 private:
     QMap<QString,QByteArray> messageMap;
 };

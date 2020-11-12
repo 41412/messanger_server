@@ -14,7 +14,7 @@ public:
     explicit ChatRoomMgr(QObject *parent = nullptr);
     void process(const QMap<QString,QString>& mp,const QByteArray& extradata,BaseSessionProxy* sp);
     bool addUserInRoom(const QString& nickname,const QString& roomId);
-    bool removeUserInRoom(const QString& roomId);
+    bool removeUserInRoom(const QString& roomId,const QString& nickname);
     bool addRoom(const QString& roomId,const QString& roomTitle= "");
     bool removeRoom(const QString& roomId);
     //void findRoom(const QString)

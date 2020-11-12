@@ -11,7 +11,6 @@ public:
     explicit ChatRoom();
     explicit ChatRoom(QString roomId,QString admin);
 
-
     void setRoomID(QString nickName);
     QString getRoomId();
 //    void setTitle();
@@ -24,6 +23,7 @@ public:
     bool isUserRoom(const QString& nickName);
     bool addUser(const QString& nickname);
     bool addUsers(const QString& nickname, const QString& delimiter = ",");
+    bool removeUsers(const QString& nickname);
     
 private:
     QString roomId;

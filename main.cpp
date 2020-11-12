@@ -17,10 +17,10 @@ int main(int argc, char *argv[])
     ChatRoomMgr chatroommgr;
     ChatLoginMgr chatloginmgr(&userinfomgr);
     ChatFriendMgr chatfriendmgr(&userinfomgr);
-    ChatUserDataMgr chatuserdatamgr;
+    ChatUserDataMgr chatuserdatamgr(&chatroommgr,&chatfriendmgr);
 
 
-    ChatTransmit chattransmit(&chatroommgr,&chatloginmgr,&chatfriendmgr);
+    ChatTransmit chattransmit(&chatloginmgr,&chatuserdatamgr);
     ChatServer server(&chattransmit,&chatuserdatamgr);
 
 
