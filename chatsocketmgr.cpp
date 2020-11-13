@@ -41,6 +41,7 @@ void ChatSocketMgr::setSessionUser(ChatSession* socket,const QString& nickname)
         st.remove(socket);
     }
     mp[nickname] = socket;
+    socket->setNickName(nickname);
 
     qDebug() << "set nickname for a socket!!!  " << QString::asprintf("%X", mp[nickname]);
 }

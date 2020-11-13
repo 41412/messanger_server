@@ -17,6 +17,7 @@ void ChatSessionProxy::doWork(const QMap<QString,QString>& m)
         csm->setSessionUser(cs, m["nickname"]);
 
         //  user data manager
+        cudm->addUser(m["nickname"]);
     }
 }
 

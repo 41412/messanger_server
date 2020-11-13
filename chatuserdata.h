@@ -18,7 +18,7 @@ public:
     bool addFriend(const QString& nickname);
     bool removeFriend(const QString& nickname);
     int  getCountFriend();
-
+    void load();
 private:
     QString nickname;
     QSet<QString> friendlist;

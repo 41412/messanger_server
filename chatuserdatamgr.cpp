@@ -23,7 +23,9 @@ bool ChatUserDataMgr::removeFriend(const QString& fromUser,const QString& friend
 
 bool ChatUserDataMgr::addUser(const QString& nickname)
 {
-    mpUsers.insert(nickname,QSharedPointer<ChatUserData>(new ChatUserData(nickname)));
+    ChatUserData* p = new ChatUserData(nickname);
+    p->load();
+    mpUsers.insert(nickname,QSharedPointer<ChatUserData>(p));
 
     return true;
 }

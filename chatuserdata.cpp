@@ -38,3 +38,13 @@ int  ChatUserData::getCountFriend()
 {
     return friendlist.count();
 }
+
+void ChatUserData::load()
+{
+    // load user data from file or db
+    //TEST@@
+    friendlist.clear();
+
+    friendlist.insert("mike");
+    friendlist.insert("bogeun");
+}

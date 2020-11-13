@@ -33,17 +33,17 @@ bool ChatRoomMgr::addUserInRoom(const QString& nickname,const QString& roomId)
 }
 bool ChatRoomMgr::removeUserInRoom(const QString& roomId,const QString& nickname)
 {
-   QStringList roomUserList = mpRooms[roomId]->getRoomUserList() ;
+    QStringList roomUserList = mpRooms[roomId]->getRoomUserList() ;
 
-   for(auto n : roomUserList)
-   {
-       if(nickname == n)
-       {
-           mpRooms[roomId]->removeUsers(nickname);
+    for(auto n : roomUserList)
+    {
+        if(nickname == n)
+        {
+            mpRooms[roomId]->removeUsers(nickname);
 
-           return true;
-       }
-   }
+            return true;
+        }
+    }
 
     return false;
 }
@@ -74,10 +74,18 @@ void ChatRoomMgr::process(const QMap<QString,QString>& mp,const QByteArray& extr
         QStringList rooms;
         QMap<QString,QSharedPointer<ChatRoom>>& mr = mpRooms;
 
+        // find name in rooms
+        for (auto e: mpRooms) {
+            if (e->isUserRoom(sp->getUserName())) {
+                // add room id to rooms
+                rooms.append(e->getRoomId());
+            }
+        }
+
         // find rooms by user name
-        ChatDataProtocol::makeSendChatRoomList(rooms, [mr](const QString& id, QStringList& list) {
+        sp->send(ChatDataProtocol::makeSendChatRoomList(rooms, [mr](const QString& id, QStringList& list) {
             list = mr[id]->getRoomUserList();
-        });
+        }));
 
     }
     //방에 속하는 유저들 목록 요청
@@ -130,14 +138,23 @@ void ChatRoomMgr::process(const QMap<QString,QString>& mp,const QByteArray& extr
             index = insertChat(roomId,mp["user"],message,timestamp);
             QByteArray body = ChatDataProtocol::makeResUpdateChat(roomId,mp["user"],timestamp,index,message);
             sp->send(roomUser,body);
+
+            qDebug() << "sent " << body;
         }//else
 
     }//else if
 }
-
+//todo : roomTitle 11.13
 bool ChatRoomMgr::addRoom(const QString& roomId,const QString& roomTitle)
-{
+{   
+    if(mpRooms.contains(roomId) == true)
+    {
+        return false;
+    }
 
+    mpRooms.insert(roomId,QSharedPointer<ChatRoom>(new ChatRoom(roomId,"")));
+
+    return true;
 }
 bool ChatRoomMgr::removeRoom(const QString& roomId)
 {
@@ -178,7 +195,7 @@ QStringList ChatRoomMgr::getRoomUsers(const QString& roomId)
 }
 QStringList ChatRoomMgr::getConversation(const QString& roomId)
 {
- //   return
+    //   return
 }
 int ChatRoomMgr::insertChat(const QString& roomId,const QString& nickname,const QString& message,const QString& date)
 {

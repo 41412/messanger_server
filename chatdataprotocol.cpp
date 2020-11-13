@@ -127,12 +127,12 @@ QByteArray ChatDataProtocol::makeLoginRes(bool success)
 }
 QByteArray ChatDataProtocol::makeSendStart()
 {
-   return fillHeader("USERDATA_SEND_START");
+    return fillHeader("USERDATA_SEND_START");
 }
 
 QByteArray ChatDataProtocol::makeSendEnd()
 {
-   return fillHeader("USERDATA_SEND_End");
+    return fillHeader("USERDATA_SEND_End");
 }
 QByteArray ChatDataProtocol::makeSendFriendList(const QStringList& friendList)
 {
@@ -144,11 +144,8 @@ QByteArray ChatDataProtocol::makeSendFriendList(const QStringList& friendList)
     ba += 29;
     ba += QString::number(friendList.count()).toUtf8();//친구의 수 저장
     //클라이언트에게 전달해줄 친구 리스트 저장
-    for(auto n : friendList)
-    {
-        ba += 29;
-        ba += n.toStdString().c_str();
-    }
+    ba += 29;
+    ba += friendList.join(29).toUtf8();
 
 #if 0
     ba += "SEND_FRIENDLIST";
@@ -172,18 +169,30 @@ QByteArray ChatDataProtocol::makeSendChatRoomList(const QStringList& roomlist, s
 {
     QByteArray ba;
 
+    ba +="SEND_CHATROOMLIST";
+    ba += 29;
+    ba += QString::number(roomlist.size()).toUtf8();
     //loop
     //get userlist
+
     for(auto roomid:roomlist)
     {
         QStringList l;
         callback(roomid,l);
 
-        // set room id
-        // append atendees
+        ba += 29;
+        ba += roomid.toUtf8();
+        ba += 30;
+        ba += QString::number(l.size()).toUtf8();
+        ba += 30;
+        ba += l.join(30).toUtf8();
+
     }
 
-#if defined(QT_DEBUG)
+
+
+
+#if 0
     ba += "SEND_CHATROOMLIST";
     ba +=29;
     ba +="2";
@@ -235,6 +244,7 @@ QByteArray ChatDataProtocol::makeResUpdateChat(const QString& roomid,const QStri
     ba += roomid.toUtf8();
     ba += 29;
     ba += user.toUtf8();
+    ba += 29;
     ba += timestamp.toUtf8();
     ba += 29;
     ba += QString::number(index).toUtf8();
@@ -332,12 +342,12 @@ QMap<QString,QString> ChatDataProtocol::ReceiveProtocol(const QByteArray& messag
     {
         QStringList tokens = QString::fromUtf8(body).split(29);
 
-//        if(tokens.size() < 2)
-//        {
-//            qDebug() << "Insufficient message tokens";
+        //        if(tokens.size() < 2)
+        //        {
+        //            qDebug() << "Insufficient message tokens";
 
-//        }
-//        else
+        //        }
+        //        else
         {
             m["target"] = "friend";
             m["id"] = pid;

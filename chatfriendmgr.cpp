@@ -26,6 +26,8 @@ bool ChatFriendMgr::removeFriend(const QString& nickname,const QString& friendna
 //todo
 bool ChatFriendMgr::isExistFriend(const QString& nickname,const QString& friendname)
 {
+
+
     return false;
 }
 
